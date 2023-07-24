@@ -1,9 +1,65 @@
+import asyncHandler from "express-async-handler";
+import User from "../models/userModel.js";
+
+
+
 //  @desc  Auth user/set  Token
 // route POST api/user/auth
 // @access Public
-import asyncHandler from "express-async-handler"
-const authUser = asyncHandler( async (req,res) =>{
-    res.status(200).json({message:"Auth user"})
+const authUser = asyncHandler(async (req, res) => {
+  res.status(200).json({ message: "Auth user" });
 });
 
-export{authUser};
+//  @desc Register a new user
+// route POST api/users
+// @access Public
+
+const registerUser = asyncHandler(async (req, res) => {
+    // console.log(req.body);
+    const {email , name , password} = req.body;
+    const userExists  = await User.findOne({email});
+    if(userExists){
+        res.status(400);
+        throw new Error("User already exists");
+
+    }
+
+    const user = await User.create({name,email,password});
+    if(user){
+        res.status(201).json({_id: user._id , name: user.name , email:user.email});
+    }else{
+        res.status(400);
+        throw new Error("Invalid user data")
+    }
+  res.status(200).json({ message: "Register  User" });
+});
+
+//  @desc logout a user
+// route POST api/users/logout
+// @access Public
+const logoutUser = asyncHandler(async (req, res) => {
+  res.status(200).json({ message: "Logout user" });
+});
+
+//  @desc Get user profile
+// route GET api/users/profile
+// @access Private
+
+const getUserProfile = asyncHandler(async (req, res) => {
+  res.status(200).json({ message: "User Profile" });
+});
+
+//  @desc  update user profile
+// route PUT api/users/profile
+// @access Private
+const updateUserProfile = asyncHandler(async (req, res) => {
+  res.status(200).json({ message: "update user profile" });
+});
+
+export {
+  authUser,
+  registerUser,
+  getUserProfile,
+  updateUserProfile,
+  logoutUser,
+};
